@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basketball Stars 26-27</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="ui">
+  <!-- MAIN MENU -->
+  <section id="scr-main" class="screen active">
+    <div class="logo">
+      <div class="logo-ball">🏀</div>
+      <h1>BASKETBALL<span>STARS</span></h1>
+      <div class="season-tag">2026-27 SEASON</div>
+    </div>
+    <div class="menu-buttons">
+      <button class="big" data-go="quick">▶ Quick Match <small>vs CPU</small></button>
+      <button class="big" data-go="local">👥 Same Device <small>2–4 players</small></button>
+      <button class="big" data-go="lan">📡 Network Play <small>same Wi-Fi / LAN</small></button>
+      <button class="big" data-go="season">🏆 Season Mode <small>road to the Finals</small></button>
+      <div class="row">
+        <button data-go="help">❓ How to Play</button>
+        <button data-go="settings">⚙ Settings</button>
+      </div>
+    </div>
+    <div class="footer">30 teams · real 2026-27 rosters · 1v1 &amp; 2v2 · Mega Dunks &amp; knockdowns</div>
+  </section>
+
+  <!-- MATCH SETUP (quick + local) -->
+  <section id="scr-setup" class="screen">
+    <div class="panel wide">
+      <div class="panel-head">
+        <button class="back" data-go="main">← Back</button>
+        <h2 id="setup-title">Quick Match</h2>
+        <div></div>
+      </div>
+      <div class="options" id="setup-options"></div>
+      <div class="sides">
+        <div class="side" id="setup-side-0"></div>
+        <div class="vs">VS</div>
+        <div class="side" id="setup-side-1"></div>
+      </div>
+      <div class="panel-foot">
+        <div class="hint" id="setup-hint"></div>
+        <button class="primary" id="setup-start">TIP OFF ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAN BROWSER -->
+  <section id="scr-lan" class="screen">
+    <div class="panel">
+      <div class="panel-head">
+        <button class="back" data-go="main">← Back</button>
+        <h2>Network Play</h2>
+        <div></div>
+      </div>
+      <div id="lan-status" class="status">Connecting…</div>
+      <div id="lan-addr" class="addr"></div>
+      <div class="lan-grid">
+        <div>
+          <h3>Create a game</h3>
+          <label>Room name <input id="lan-room-name" maxlength="24" placeholder="My game"></label>
+          <div class="seg" id="lan-mode"><button data-v="1v1" class="on">1v1</button><button data-v="2v2">2v2</button></div>
+          <button class="primary" id="lan-create">Create Room</button>
+          <h3>Join by code</h3>
+          <div class="row"><input id="lan-code" maxlength="4" placeholder="ABCD" class="code"><button id="lan-join">Join</button></div>
+        </div>
+        <div>
+          <h3>Open games <button class="mini" id="lan-refresh">↻</button></h3>
+          <div id="lan-rooms" class="rooms"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAN LOBBY -->
+  <section id="scr-lobby" class="screen">
+    <div class="panel wide">
+      <div class="panel-head">
+        <button class="back" id="lobby-leave">← Leave</button>
+        <h2 id="lobby-title">Lobby</h2>
+        <div class="code-badge" id="lobby-code"></div>
+      </div>
+      <div class="options" id="lobby-options"></div>
+      <div class="sides">
+        <div class="side" id="lobby-side-0"></div>
+        <div class="vs">VS</div>
+        <div class="side" id="lobby-side-1"></div>
+      </div>
+      <div class="panel-foot">
+        <div class="hint" id="lobby-hint"></div>
+        <button class="primary" id="lobby-start">START GAME ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEASON -->
+  <section id="scr-season" class="screen">
+    <div class="panel wide">
+      <div class="panel-head">
+        <button class="back" data-go="main">← Back</button>
+        <h2 id="season-title">Season Mode</h2>
+        <div></div>
+      </div>
+      <div id="season-body"></div>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section id="scr-help" class="screen">
+    <div class="panel">
+      <div class="panel-head">
+        <button class="back" data-go="main">← Back</button>
+        <h2>How to Play</h2>
+        <div></div>
+      </div>
+      <div class="help">
+        <table class="keys">
+          <tr><th>Action</th><th>Player 1</th><th>Player 2</th><th>Gamepad</th></tr>
+          <tr><td>Move</td><td><kbd>A</kbd> <kbd>D</kbd></td><td><kbd>←</kbd> <kbd>→</kbd></td><td>Stick / D-pad</td></tr>
+          <tr><td>Jump / Block</td><td><kbd>W</kbd></td><td><kbd>↑</kbd></td><td>A / ✕</td></tr>
+          <tr><td>Shoot (hold &amp; release)</td><td><kbd>F</kbd></td><td><kbd>K</kbd> or <kbd>Num1</kbd></td><td>X / ▢</td></tr>
+          <tr><td>Hit (knock down &amp; steal) / Pass</td><td><kbd>G</kbd></td><td><kbd>L</kbd> or <kbd>Num2</kbd></td><td>B / ○</td></tr>
+          <tr><td>Nitro sprint (hold)</td><td><kbd>Shift</kbd> or <kbd>Q</kbd></td><td><kbd>R-Shift</kbd> or <kbd>Num0</kbd></td><td>LB / L1</td></tr>
+          <tr><td>Crossover / Defensive slide</td><td><kbd>S</kbd></td><td><kbd>↓</kbd></td><td>Y / △</td></tr>
+          <tr><td>Super: Mega Dunk / Iron Defense</td><td><kbd>E</kbd></td><td><kbd>O</kbd> or <kbd>Num3</kbd></td><td>RB / R1</td></tr>
+          <tr><td>Pause</td><td colspan="3"><kbd>Esc</kbd> or <kbd>P</kbd></td></tr>
+        </table>
+        <p>Playing solo? Either keyboard layout works, and <kbd>Space</kbd> also jumps.</p>
+        <div class="tips">
+          <div><b>🎯 Shooting:</b> hold shoot to rise up, then let go when the meter is in the <span class="green">green zone</span>. A perfect release from a good shooter almost always drops. Contested shots and deep threes are harder.</div>
+          <div><b>💥 Dunks &amp; layups:</b> press shoot while driving close to the rim. High-flyers dunk from farther out. Defenders who jump at the right moment can reject it.</div>
+          <div><b>👊 Hit:</b> press Hit next to your opponent to knock them flat and send the ball flying. Miss and you're left off-balance, and a well-timed crossover makes you whiff. Knocked-down players get a moment of immunity after they get up.</div>
+          <div><b>🧤 Blocks:</b> jump just after the shooter rises. Big men have extra block range.</div>
+          <div><b>🌀 Crossovers:</b> a quick burst past your defender. Good ball handlers can break ankles and drop the defender for a second.</div>
+          <div><b>🏀 2v2:</b> pass to your teammate. Pass to a high-flyer cutting to the rim for an <b>ALLEY-OOP</b>. Press pass without the ball to call for it.</div>
+          <div><b>💨 Nitro:</b> hold to sprint. It drains the blue stamina bar, which refills when you stop.</div>
+          <div><b>⚡ SUPER bar:</b> fills with buckets, knockdowns, blocks and ankle-breakers. When it's full, press Super:<br>• <b>With the ball → MEGA DUNK.</b> Fly in from anywhere for a guaranteed, unblockable slam (3 points from behind the arc) that knocks defenders down.<br>• <b>On defense → IRON DEFENSE.</b> An 8-second shield: you can't be knocked down or crossed over, your hits always land, and nearby shots get auto-blocked.</div>
+          <div><b>Archetypes:</b> every star has a small passive edge:</div>
+        </div>
+        <table class="sigs" id="help-sigs"></table>
+        <div class="tips">
+          <div><b>🃏 Action cards</b> (optional) float onto the court. Run or jump through one to grab it: <b>Mega Dunk</b> 💥 (fills your Super bar), <b>Iron Defense</b> 🛡️, <b>Fast Break</b> ⚡ (speed and unlimited nitro), <b>Super Shot</b> 🔥 (your next shot can't miss or be blocked), <b>Freeze</b> ❄️.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="scr-settings" class="screen">
+    <div class="panel narrow">
+      <div class="panel-head">
+        <button class="back" data-go="main">← Back</button>
+        <h2>Settings</h2>
+        <div></div>
+      </div>
+      <label>Volume <input type="range" id="set-volume" min="0" max="1" step="0.05"></label>
+      <label>Your name (network play) <input id="set-name" maxlength="16"></label>
+      <p class="hint">Gamepads: press any button on a controller to wake it up, then pick it in match setup.</p>
+      <div id="set-pads" class="hint"></div>
+    </div>
+  </section>
+
+  <!-- PAUSE -->
+  <section id="scr-pause" class="overlay">
+    <div class="panel narrow center">
+      <h2>Paused</h2>
+      <button class="big" id="pause-resume">Resume</button>
+      <button class="big" id="pause-restart">Restart</button>
+      <button class="big" id="pause-help">Controls</button>
+      <button class="big" id="pause-quit">Quit to Menu</button>
+    </div>
+  </section>
+
+  <!-- END OF MATCH -->
+  <section id="scr-end" class="overlay">
+    <div class="panel center">
+      <h2 id="end-title">Final</h2>
+      <div id="end-score" class="end-score"></div>
+      <table class="stats" id="end-stats"></table>
+      <div class="row center" id="end-buttons"></div>
+    </div>
+  </section>
+</div>
+
+<!-- TEAM PICKER MODAL -->
+<div id="team-modal" class="modal">
+  <div class="panel wide">
+    <div class="panel-head">
+      <div></div><h2>Choose a Team</h2><button class="back" id="team-modal-close">✕</button>
+    </div>
+    <div id="team-grid"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

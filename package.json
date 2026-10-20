@@ -1,0 +1,13 @@
+{
+  "name": "basketball-stars-2627",
+  "version": "1.0.0",
+  "description": "Arcade 1v1/2v2 basketball with 2026-27 NBA teams. Local + LAN multiplayer.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
